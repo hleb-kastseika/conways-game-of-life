@@ -9,7 +9,7 @@ _GRID_BORDER_SIZE = 1
 function love.draw()
   drawUniverseBorder()
   drawButtons()
-  drawGrid()
+  --drawGrid()
   drawRandomCells()
 end
 
@@ -35,6 +35,7 @@ function drawButtons()
   end
 end
 
+--[[
 function drawGrid()
   for i=0,_UNIVERSE_SIZE,5 do
     for j=0,_UNIVERSE_SIZE,5 do
@@ -43,15 +44,18 @@ function drawGrid()
     end
   end
 end
+]]
 
 function drawRandomCells()
   for i=0,_UNIVERSE_SIZE,5 do
     for j=0,_UNIVERSE_SIZE,5 do
-      local isLive = math.random(0, 1) 
+      local isLive = math.random(0, 10) 
       if isLive == 1 then
-        love.graphics.setColor(64,243,19,250)
-        love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, 4, 4)
+        love.graphics.setColor(64,243,19,250)        
+      else
+        love.graphics.setColor(175,115,63,100)
       end
+      love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, 4, 4)
     end
   end
 end
