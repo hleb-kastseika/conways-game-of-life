@@ -1,15 +1,23 @@
-_MARGIN_WIDTH = 10
-_BUTTON_WIDTH = 120
-_BUTTON_HEIGHT = 50
-_BUTTON_MARGIN_WIDTH = 40
-_BUTTON_MARGIN_HEIGHT = 20
-_UNIVERSE_SIZE =_CONFIGS.window.height - _MARGIN_WIDTH * 2
-_GRID_BORDER_SIZE = 1
+function love.load()
+  _IS_STARTED = true --TODO! change to false
+  _MARGIN_WIDTH = 10
+  _BUTTON_WIDTH = 120
+  _BUTTON_HEIGHT = 50
+  _BUTTON_MARGIN_WIDTH = 40
+  _BUTTON_MARGIN_HEIGHT = 20
+  _UNIVERSE_SIZE =_CONFIGS.window.height - _MARGIN_WIDTH * 2
+  _GRID_BORDER_SIZE = 1  
+  --[[
+  TODO:
+  1. add button objects creation
+  2. add universe  object with border creation
+  3. add hardcoded values declaration
+  ]]  
+end
 
 function love.draw()
   drawUniverseBorder()
   drawButtons()
-  --drawGrid()
   drawRandomCells()
 end
 
@@ -29,22 +37,10 @@ function drawButtons()
     local yCoorditate = _MARGIN_WIDTH * i + _BUTTON_HEIGHT * (i-1)
     local yLabelCoorditate = _MARGIN_WIDTH * i + _BUTTON_HEIGHT * (i-1) + _BUTTON_MARGIN_HEIGHT
     love.graphics.rectangle("fill", xCoorditate, yCoorditate, _BUTTON_WIDTH, _BUTTON_HEIGHT)
-    
     love.graphics.setColor(255,255,255,250) --button labels color
     love.graphics.print(buttonLabels[i], xLabelCoorditate, yLabelCoorditate)
   end
 end
-
---[[
-function drawGrid()
-  for i=0,_UNIVERSE_SIZE,5 do
-    for j=0,_UNIVERSE_SIZE,5 do
-      love.graphics.setColor(175,115,63,100)
-      love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, 4, 4)
-    end
-  end
-end
-]]
 
 function drawRandomCells()
   for i=0,_UNIVERSE_SIZE,5 do
@@ -60,8 +56,18 @@ function drawRandomCells()
   end
 end
 
+function love.keypressed(key)
+	if key == "escape" then
+		love.event.push("quit")
+  end
+end
+
 function love.update(dt)
-	if love.keyboard.isDown('escape') then
-		love.event.push('quit')
-	end
+	if _IS_STARTED then
+		love.timer.sleep(1)
+  end
+end
+
+function love.mousepressed(x, y)
+  
 end
