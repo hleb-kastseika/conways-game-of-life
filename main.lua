@@ -59,3 +59,9 @@ function drawRandomCells()
     end
   end
 end
+
+function love.update(dt)
+	if love.keyboard.isDown('escape') then
+		love.event.push('quit')
+	end
+end
