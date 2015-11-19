@@ -9,6 +9,7 @@ function love.conf(t)
   t.window.fullscreentype = "desktop" 
   t.window.vsync = true
   t.window.icon = "life_icon.png"
+  t.console = true
   
   _CONFIGS = t --save configuration to global variable
 end
