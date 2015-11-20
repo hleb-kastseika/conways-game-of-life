@@ -2,7 +2,7 @@
 _CONFIGS = {}
 
 function love.conf(t)
-  t.window.width = 1024
+  t.window.width = 904
   t.window.height = 768 
   t.title = "Conway's Game Of Life"
   t.window.resizable = false
