@@ -7,30 +7,38 @@ function love.load()
   _BROWN_COLOR = {175,115,63,100} 
   
   _IS_STARTED = false
+  _IS_PAUSED = true
   _MARGIN_WIDTH = 10
   _BUTTON_WIDTH = 120
   _BUTTON_HEIGHT = 50
   _BUTTON_MARGIN_WIDTH = 40
   _BUTTON_MARGIN_HEIGHT = 20
   _UNIVERSE_SIZE =_CONFIGS.window.height - _MARGIN_WIDTH * 2
-  _GRID_BORDER_SIZE = 1  
+  _GRID_BORDER_SIZE = 1 
+  _CELL_SIZE = 4
   _BUTTONS = {
     {
       name="Start",
       action=function()
         _IS_STARTED = true
+        _IS_PAUSED = false
       end
     },
     {
       name="Pause",
       action=function()
-        --do nothing
+        if _IS_PAUSED then
+          _IS_PAUSED = false
+        else
+          _IS_PAUSED = true
+        end
       end
     },
     {
       name="Clear",
       action=function()
         _IS_STARTED = false
+        _IS_PAUSED = true
       end
     }
   }
@@ -76,37 +84,43 @@ function drawButtons()
 end
 
 function drawEmptyCells()
-  for i=0,_UNIVERSE_SIZE,5 do
-    for j=0,_UNIVERSE_SIZE,5 do
+  for i=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
+    for j=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
       love.graphics.setColor(getColor(_BROWN_COLOR))
-      love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, 4, 4)
+      love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, _CELL_SIZE, _CELL_SIZE)
     end
   end
 end
 
 function drawRandomCells()
-  for i=0,_UNIVERSE_SIZE,5 do
-    for j=0,_UNIVERSE_SIZE,5 do
-      local isLive = math.random(0, 10) 
-      if isLive == 1 then
-        love.graphics.setColor(getColor(_GREEN_COLOR))        
-      else
-        love.graphics.setColor(getColor(_BROWN_COLOR))
+  if not _IS_PAUSED then
+    -- calculate next generation and draw it
+    
+    for i=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
+      for j=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
+        local isAlive = math.random(0, 10) 
+        if isAlive == 1 then
+          love.graphics.setColor(getColor(_GREEN_COLOR))        
+        else
+          love.graphics.setColor(getColor(_BROWN_COLOR))
+        end
+        love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, _CELL_SIZE, _CELL_SIZE)
       end
-      love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, 4, 4)
     end
+  else
+    -- draw old generation
   end
 end
 
 function love.keypressed(key)
-	if key == "escape" then
-		love.event.push("quit")
+  if key == "escape" then
+    love.event.push("quit")
   end
 end
 
 function love.update(dt)
-	if _IS_STARTED then
-		love.timer.sleep(1.5)
+  if _IS_STARTED then
+    love.timer.sleep(1.5)
   end
 end
 
@@ -115,6 +129,6 @@ function love.mousepressed(x, y)
     if x > _BUTTONS[i].xCoorditate and x < _BUTTONS[i].xCoorditate + _BUTTON_WIDTH
         and y > _BUTTONS[i].yCoorditate and y < _BUTTONS[i].yCoorditate + _BUTTON_HEIGHT then
       _BUTTONS[i].action()
-		end
+    end
   end
 end
