@@ -1,3 +1,5 @@
+require "cell"
+
 function love.load()
   --rgb colors
   _GREEN_COLOR = {64, 243, 19, 250}
@@ -20,19 +22,19 @@ function love.load()
   
   --populate initial cell array
   _CELL_GRID = {}
-  for i=1,_CELL_GRID_SIZE do
+  for i=0,_CELL_GRID_SIZE do
     _CELL_GRID[i] = {}
-    for j=1,_CELL_GRID_SIZE do
-      local cell = {}
-      local isAlive = math.random(0, 10) 
-      if isAlive == 1 then
-        cell.isAlive = "true"
-      else
-        cell.isAlive = "false"
-      end
+    for j=0,_CELL_GRID_SIZE do      
+      local cell = Cell.new(
+                     _MARGIN_WIDTH + 2 + i*(_CELL_SIZE+_GRID_BORDER_SIZE),
+                     _MARGIN_WIDTH + 2 + j*(_CELL_SIZE+_GRID_BORDER_SIZE), 
+                     math.random(0, 10) == 1 and true or false)
+                   
       _CELL_GRID[i][j] = cell
     end
-  end  
+  end
+  
+  _OLD_CELL_GRID = _CELL_GRID
   
   _BUTTONS = {
     {
@@ -72,10 +74,10 @@ function love.draw()
   
   if _IS_STARTED then    
     if not _IS_PAUSED then
-      -- calculate next generation and draw it  
-      drawRandomCells()
+      calculateNewGeneration()
+      drawCells(_CELL_GRID)
     else
-      --draw old generation
+      drawCells(_OLD_CELL_GRID)
     end
   else
     drawEmptyCells()
@@ -115,18 +117,34 @@ function drawEmptyCells()
   end
 end
 
-function drawRandomCells()      
-    for i=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
-      for j=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
-        local isAlive = math.random(0, 10) 
-        if isAlive == 1 then
+function drawCells(cellGrid)
+  for i=0,#cellGrid do
+    for j=0,#cellGrid do
+      if cellGrid[i][j].isAlive then
           love.graphics.setColor(getColor(_GREEN_COLOR))        
         else
           love.graphics.setColor(getColor(_BROWN_COLOR))
         end
-        love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, _CELL_SIZE, _CELL_SIZE)
-      end
+        love.graphics.rectangle("fill", cellGrid[i][j].x, cellGrid[i][j].y, _CELL_SIZE, _CELL_SIZE)
     end
+  end
+end
+
+function calculateNewGeneration()
+  _OLD_CELL_GRID = _CELL_GRID
+  
+  _CELL_GRID = {}
+  for i=0,_CELL_GRID_SIZE do
+    _CELL_GRID[i] = {}
+    for j=0,_CELL_GRID_SIZE do      
+      local cell = Cell.new(
+                     _MARGIN_WIDTH + 2 + i*(_CELL_SIZE+_GRID_BORDER_SIZE),
+                     _MARGIN_WIDTH + 2 + j*(_CELL_SIZE+_GRID_BORDER_SIZE), 
+                     math.random(0, 10) == 1 and true or false)
+                   
+      _CELL_GRID[i][j] = cell
+    end
+  end
 end
 
 function love.keypressed(key)
