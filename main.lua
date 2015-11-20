@@ -16,6 +16,24 @@ function love.load()
   _UNIVERSE_SIZE =_CONFIGS.window.height - _MARGIN_WIDTH * 2
   _GRID_BORDER_SIZE = 1 
   _CELL_SIZE = 4
+  _CELL_GRID_SIZE = math.floor(_UNIVERSE_SIZE/(_CELL_SIZE+_GRID_BORDER_SIZE))
+  
+  --populate initial cell array
+  _CELL_GRID = {}
+  for i=1,_CELL_GRID_SIZE do
+    _CELL_GRID[i] = {}
+    for j=1,_CELL_GRID_SIZE do
+      local cell = {}
+      local isAlive = math.random(0, 10) 
+      if isAlive == 1 then
+        cell.isAlive = "true"
+      else
+        cell.isAlive = "false"
+      end
+      _CELL_GRID[i][j] = cell
+    end
+  end  
+  
   _BUTTONS = {
     {
       name="Start",
@@ -52,8 +70,13 @@ function love.draw()
   drawUniverseBorder()
   drawButtons()
   
-  if _IS_STARTED then
-    drawRandomCells()
+  if _IS_STARTED then    
+    if not _IS_PAUSED then
+      -- calculate next generation and draw it  
+      drawRandomCells()
+    else
+      --draw old generation
+    end
   else
     drawEmptyCells()
   end
@@ -92,10 +115,7 @@ function drawEmptyCells()
   end
 end
 
-function drawRandomCells()
-  if not _IS_PAUSED then
-    -- calculate next generation and draw it
-    
+function drawRandomCells()      
     for i=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
       for j=0,_UNIVERSE_SIZE,_CELL_SIZE+_GRID_BORDER_SIZE do
         local isAlive = math.random(0, 10) 
@@ -107,28 +127,26 @@ function drawRandomCells()
         love.graphics.rectangle("fill", _MARGIN_WIDTH + 2 + i, _MARGIN_WIDTH + 2 + j, _CELL_SIZE, _CELL_SIZE)
       end
     end
-  else
-    -- draw old generation
-  end
 end
 
 function love.keypressed(key)
-  if key == "escape" then
-    love.event.push("quit")
+	if key == "escape" then
+		love.event.push("quit")
   end
 end
 
 function love.update(dt)
-  if _IS_STARTED then
-    love.timer.sleep(1.5)
+	if _IS_STARTED then
+		love.timer.sleep(1)
   end
 end
 
+--catch buttons clicks
 function love.mousepressed(x, y)
   for i=1,#_BUTTONS do
     if x > _BUTTONS[i].xCoorditate and x < _BUTTONS[i].xCoorditate + _BUTTON_WIDTH
         and y > _BUTTONS[i].yCoorditate and y < _BUTTONS[i].yCoorditate + _BUTTON_HEIGHT then
       _BUTTONS[i].action()
-    end
+		end
   end
 end
