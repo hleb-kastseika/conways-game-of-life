@@ -24,7 +24,7 @@ function love.load()
   --populate initial cell array
   _CELL_GRID = {}
   generateInitialCells()  
-  _OLD_CELL_GRID = _CELL_GRID
+  _OLD_CELL_GRID = clone(_CELL_GRID)
   
   _BUTTONS = {
     Button.new("Start", 
@@ -115,9 +115,10 @@ function drawCells(cellGrid)
 end
 
 function calculateNewGeneration()
-  _OLD_CELL_GRID = _CELL_GRID
-  
+  _OLD_CELL_GRID = clone(_CELL_GRID)
+  _CELL_GRID = {}
   for i=0,_CELL_GRID_SIZE do
+    _CELL_GRID[i] = {}
     for j=0,_CELL_GRID_SIZE do
       local oldCell = _OLD_CELL_GRID[i][j]      
       
@@ -171,13 +172,16 @@ function calculateNewGeneration()
         end
       end
        
+      local newCell = clone(oldCell)
       if oldCell.isAlive and (liveNeighborsCount < 2 or liveNeighborsCount > 3) then
-        _CELL_GRID[i][j].isAlive = false
+        newCell.isAlive = false
       end
         
       if not oldCell.isAlive and liveNeighborsCount == 3 then
-        _CELL_GRID[i][j].isAlive = true
+        newCell.isAlive = true
       end
+      
+      _CELL_GRID[i][j] = newCell
     end
   end
 end
@@ -190,7 +194,7 @@ end
 
 function love.update(dt)
   if _IS_STARTED then
-    love.timer.sleep(1)
+    love.timer.sleep(0.5)
   end
 end
 
@@ -279,4 +283,19 @@ function generateInitialCells()
       _CELL_GRID[i][j] = cell
     end
   end
+end
+
+function clone(t) -- deep-copy a table
+    if type(t) ~= "table" then return t end
+    local meta = getmetatable(t)
+    local target = {}
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            target[k] = clone(v)
+        else
+            target[k] = v
+        end
+    end
+    setmetatable(target, meta)
+    return target
 end
