@@ -1,6 +1,8 @@
 # conways-game-of-life
 Conway's Game of Life implementation, created on Lua with the LÖVE framework.
 
+![Screenshot](https://pbs.twimg.com/media/CUgPnwGUcAAzIUg.png:large)
+
 
 ---
 
