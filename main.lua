@@ -1,4 +1,5 @@
 require "cell"
+require "button"
 
 function love.load()
   --rgb colors
@@ -35,30 +36,24 @@ function love.load()
   _OLD_CELL_GRID = _CELL_GRID
   
   _BUTTONS = {
-    {
-      name="Start",
-      action=function()
-        _IS_STARTED = true
-        _IS_PAUSED = false
-      end
-    },
-    {
-      name="Pause",
-      action=function()
-        if _IS_PAUSED then
-          _IS_PAUSED = false
-        else
-          _IS_PAUSED = true
-        end
-      end
-    },
-    {
-      name="Clear",
-      action=function()
-        _IS_STARTED = false
-        _IS_PAUSED = true
-      end
-    }
+    Button.new("Start", 
+             function()
+               _IS_STARTED = true
+               _IS_PAUSED = false
+             end),
+    Button.new("Pause", 
+             function()
+               if _IS_PAUSED then
+                 _IS_PAUSED = false
+               else
+                  _IS_PAUSED = true
+               end
+             end),
+    Button.new("Clear", 
+             function()
+               _IS_STARTED = false
+               _IS_PAUSED = true
+             end)
   }
 end
 
@@ -118,25 +113,79 @@ function drawCells(cellGrid)
   for i=0,#cellGrid do
     for j=0,#cellGrid do
       if cellGrid[i][j].isAlive then
-          love.graphics.setColor(getColor(_GREEN_COLOR))        
-        else
-          love.graphics.setColor(getColor(_BROWN_COLOR))
-        end
-        love.graphics.rectangle("fill", cellGrid[i][j].x, cellGrid[i][j].y, _CELL_SIZE, _CELL_SIZE)
+        love.graphics.setColor(getColor(_GREEN_COLOR))        
+      else
+        love.graphics.setColor(getColor(_BROWN_COLOR))
+      end
+      love.graphics.rectangle("fill", cellGrid[i][j].x, cellGrid[i][j].y, _CELL_SIZE, _CELL_SIZE)
     end
   end
 end
 
 function calculateNewGeneration()
   _OLD_CELL_GRID = _CELL_GRID
+  
   for i=0,_CELL_GRID_SIZE do
-    _CELL_GRID[i] = {}
-    for j=0,_CELL_GRID_SIZE do      
-      local cell = Cell.new(
-                     _MARGIN_WIDTH + 2 + i*(_CELL_SIZE+_GRID_BORDER_SIZE),
-                     _MARGIN_WIDTH + 2 + j*(_CELL_SIZE+_GRID_BORDER_SIZE), 
-                     math.random(0, 10) == 1 and true or false)                   
-      _CELL_GRID[i][j] = cell
+    for j=0,_CELL_GRID_SIZE do
+      local oldCell = _OLD_CELL_GRID[i][j]      
+      
+      local neighbors = {}
+      local tempCell = nil
+      
+      tempCell = getUpperLeft(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getUpper(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getUpperRight(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getLeft(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getRight(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getBottomLeft(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      tempCell = getBottom(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+
+      tempCell = getBottomRight(i,j)
+      if tempCell ~= nil then
+        table.insert(neighbors, tempCell)
+      end
+      
+      local liveNeighborsCount = 0
+      for i=1,#neighbors do
+        if neighbors[i].isAlive then 
+          liveNeighborsCount = liveNeighborsCount + 1
+        end
+      end
+       
+      if oldCell.isAlive and liveNeighborsCount < 2 and liveNeighborsCount > 3 then
+        _CELL_GRID[i][j].isAlive = false
+      end
+        
+      if not oldCell.isAlive and liveNeighborsCount == 3 then
+        _CELL_GRID[i][j].isAlive = true
+      end
     end
   end
 end
@@ -161,4 +210,76 @@ function love.mousepressed(x, y)
       _BUTTONS[i].action()
     end
   end
+end
+
+function getUpperLeft(i,j)
+  if i>0 and j>0 then 
+    return _OLD_CELL_GRID[i-1][j-1]
+  else
+    return nil
+  end
+end
+
+function getUpper(i,j)
+  if j>0 then 
+    return _OLD_CELL_GRID[i][j-1]
+  else
+    return nil
+  end
+end
+
+function getUpperRight(i,j)
+  if i>0 and j<#_OLD_CELL_GRID then 
+    return _OLD_CELL_GRID[i-1][j+1]
+  else
+    return nil
+  end
+end
+
+function getLeft(i,j)
+  if i>0 then 
+    return _OLD_CELL_GRID[i-1][j]
+  else
+    return nil
+  end
+end
+
+function getRight(i,j)
+  if i<#_OLD_CELL_GRID then 
+    return _OLD_CELL_GRID[i+1][j]
+  else
+    return nil
+  end
+end
+
+function getBottomLeft(i,j)
+  if i>0 and j<#_OLD_CELL_GRID then 
+    return _OLD_CELL_GRID[i-1][j+1]
+  else
+    return nil
+  end
+end
+
+function getBottom(i,j)
+  if j<#_OLD_CELL_GRID then 
+    return _OLD_CELL_GRID[i][j+1]
+  else
+    return nil
+  end
+end
+
+function getBottomRight(i,j)
+  if i<#_OLD_CELL_GRID and j<#_OLD_CELL_GRID then 
+    return _OLD_CELL_GRID[i+1][j+1]
+  else
+    return nil
+  end
+end
+
+function table.shallow_copy(t)
+  local t2 = {}
+  for k,v in pairs(t) do
+    t2[k] = v
+  end
+  return t2
 end
