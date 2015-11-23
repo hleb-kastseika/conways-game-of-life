@@ -23,16 +23,7 @@ function love.load()
   
   --populate initial cell array
   _CELL_GRID = {}
-  for i=0,_CELL_GRID_SIZE do
-    _CELL_GRID[i] = {}
-    for j=0,_CELL_GRID_SIZE do      
-      local cell = Cell.new(
-                     _MARGIN_WIDTH + 2 + i*(_CELL_SIZE+_GRID_BORDER_SIZE),
-                     _MARGIN_WIDTH + 2 + j*(_CELL_SIZE+_GRID_BORDER_SIZE), 
-                     math.random(0, 10) == 1 and true or false)                   
-      _CELL_GRID[i][j] = cell
-    end
-  end  
+  generateInitialCells()  
   _OLD_CELL_GRID = _CELL_GRID
   
   _BUTTONS = {
@@ -40,6 +31,7 @@ function love.load()
              function()
                _IS_STARTED = true
                _IS_PAUSED = false
+               generateInitialCells()
              end),
     Button.new("Pause", 
              function()
@@ -179,7 +171,7 @@ function calculateNewGeneration()
         end
       end
        
-      if oldCell.isAlive and liveNeighborsCount < 2 and liveNeighborsCount > 3 then
+      if oldCell.isAlive and (liveNeighborsCount < 2 or liveNeighborsCount > 3) then
         _CELL_GRID[i][j].isAlive = false
       end
         
@@ -276,10 +268,15 @@ function getBottomRight(i,j)
   end
 end
 
-function table.shallow_copy(t)
-  local t2 = {}
-  for k,v in pairs(t) do
-    t2[k] = v
+function generateInitialCells()
+  for i=0,_CELL_GRID_SIZE do
+    _CELL_GRID[i] = {}
+    for j=0,_CELL_GRID_SIZE do      
+      local cell = Cell.new(
+                     _MARGIN_WIDTH + 2 + i*(_CELL_SIZE+_GRID_BORDER_SIZE),
+                     _MARGIN_WIDTH + 2 + j*(_CELL_SIZE+_GRID_BORDER_SIZE), 
+                     math.random(0, 10) == 1 and true or false)                   
+      _CELL_GRID[i][j] = cell
+    end
   end
-  return t2
 end
