@@ -61,7 +61,7 @@ function love.draw()
       calculateNewGeneration()
       drawCells(_CELL_GRID)
     else
-      drawCells(_OLD_CELL_GRID)
+      drawCells(_CELL_GRID)
     end
   else
     drawEmptyCells()
@@ -194,7 +194,7 @@ end
 
 function love.update(dt)
   if _IS_STARTED then
-    love.timer.sleep(0.5)
+    love.timer.sleep(1)
   end
 end
 
