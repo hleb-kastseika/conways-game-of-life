@@ -1,4 +1,7 @@
 # Conway's Game of Life
+
+[![License](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](https://raw.githubusercontent.com/last-khajiit/conways-game-of-life/master/copying.txt)
+
 Conway's Game of Life created with Lua with the LÖVE framework.
 
 ![Screenshot](https://pbs.twimg.com/media/CUgPnwGUcAAzIUg.png:large)
