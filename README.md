@@ -11,7 +11,7 @@ Conway's Game of Life created with Lua with the LÖVE framework.
 
 ---
 
-**Copyright © 2017 Gleb Kosteiko <gleb.kosteiko@gmail.com>**
+**Copyright © Gleb Kosteiko**
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
